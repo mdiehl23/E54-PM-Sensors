@@ -31,7 +31,7 @@ import sps30, time
 
 # Specify serial port name for sensor
 # i.e. "COM10" for Windows or "/dev/ttyUSB0" for Linux
-device_port = "/dev/tty.usbserial-FT4R5O6P"
+device_port = "COM6"
 
 # Specify output file name and comment about experiment
 output_file = "SPS30_output.txt"
