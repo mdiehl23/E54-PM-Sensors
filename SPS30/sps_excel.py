@@ -1,6 +1,9 @@
 import sps30, time
 import xlsxwriter
-
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
+from datetime import datetime
 # Make workbook
 workbook = xlsxwriter.Workbook('/Users/matthewdiehl/Desktop/testsps30.xlsx')
 worksheet = workbook.add_worksheet()
@@ -19,43 +22,65 @@ device_port = "/dev/tty.usbserial-FT4R5O6P"
 sensor = sps30.SPS30(device_port)
 sensor.start()
 
-# Start in column below header
-i = 2
+pm_25 = np.array([])
+pm_10 = np.array([])
+dates = []
 
 '''
 The device needs to idle for a
 second before collecting data
 '''
+print("Starting data log...")
+
 time.sleep(5)
 
-try:
-    while True:
-        # Read data. This is a tuple with 10 values.
-        output = sensor.read_values()
+for i in range(2,102):
+    # Read data. This is a tuple with 10 values.
+    output = sensor.read_values()
 
-        # PM2.5 is at index 1
-        worksheet.write('A'+str(i), output[1])
-        # PM10 is at index 3
-        worksheet.write('B'+str(i), output[3])
-
-        # Go to next cell
-        i+=1
+    # PM2.5 is at index 1
+    worksheet.write('A'+str(i), output[1])
+    pm_25 = np.append(pm_25,output[1])
+    # PM10 is at index 3
+    worksheet.write('B'+str(i), output[3])
+    pm_10 = np.append(pm_10,output[3])
+    dates.append(datetime.fromtimestamp(time.time()))
+    '''
+    Date stuff not implemented but useful
         
-        '''
-        Date stuff not implemented but useful
-        
-        date = time.localtime()
-        act_date = str(date[0]) + "/" + str(date[1]) + "/" + str(date[2])
-        act_time = str(date[3]) + ":" + str(date[4]) + ":" + str(date[5])
+    date = time.localtime()
+    act_date = str(date[0]) + "/" + str(date[1]) + "/" + str(date[2])
+    act_time = str(date[3]) + ":" + str(date[4]) + ":" + str(date[5])
 
-        output_data = act_date + "," + act_time + "," + sensorData[:-1] # remove comma from the end
-        '''
-        print("Writing to Excel...")
+    output_data = act_date + "," + act_time + "," + sensorData[:-1] # remove comma from the end
+    '''
+    print("Writing to Excel...")
 
-        time.sleep(1)
+    time.sleep(1)
 
-except KeyboardInterrupt:
-    sensor.stop()
-    sensor.close_port()
-    print("Data logging stopped")
-    workbook.close()
+# Make Subplots
+fig, (ax1,ax2) = plt.subplots(1,2)
+fig.autofmt_xdate()
+
+# PM 2.5
+ax1.plot(dates,pm_25, 'tab:red')
+ax1.set_title('PM 2.5 Data')
+ax1.set(xlabel = 'Date', ylabel = 'ug/m^3')
+ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
+
+# PM 10
+ax2.plot(dates,pm_10, 'tab:green')
+ax2.set_title('PM 10 Data')
+ax2.set(xlabel = 'Date', ylabel = 'ug/m^3')
+ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
+# Stop Sensor
+sensor.stop()
+sensor.close_port()
+
+# Print Stats
+print("Data logging stopped")
+print("Average PM2.5 Concentration: " + str(np.average(pm_25)))
+print("Average PM10 Concentration: " + str(np.average(pm_10)))
+
+workbook.close()
+plt.show()
