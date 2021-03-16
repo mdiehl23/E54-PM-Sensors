@@ -26,6 +26,7 @@ sensor.start()
 pm_25 = np.array([])
 pm_10 = np.array([])
 dates = []
+TIME_SECONDS = 10
 
 '''
 The device needs to idle for a few
@@ -34,47 +35,61 @@ seconds before collecting data
 print("Starting data log...")
 
 time.sleep(5)
+j = 0
+try:
+    while(j < TIME_SECONDS):
+        # Read data. This is a tuple with 10 values.
+        output = sensor.read_values()
 
-for i in range(2,5):
-    # Read data. This is a tuple with 10 values.
-    output = sensor.read_values()
-
-    # PM2.5 is at index 1
-    worksheet.write('A'+str(i), output[1])
-    pm_25 = np.append(pm_25,output[1])
-    # PM10 is at index 3
-    worksheet.write('B'+str(i), output[3])
-    pm_10 = np.append(pm_10,output[3])
-    dates.append(datetime.fromtimestamp(time.time()))
+        # PM2.5 is at index 1
+        worksheet.write('A'+str(j+2), output[1])
+        pm_25 = np.append(pm_25,output[1])
+        # PM10 is at index 3
+        worksheet.write('B'+str(j+2), output[3])
+        pm_10 = np.append(pm_10,output[3])
+        dates.append(datetime.fromtimestamp(time.time()))
     
-    print("Writing to Excel...")
+        print("Writing to Excel...")
 
-    time.sleep(1)
+        time.sleep(1)
+        j+=1
 
-# Make Subplots
-fig, (ax1,ax2) = plt.subplots(1,2)
-fig.autofmt_xdate()
+    # Make Subplots
+    fig, (ax1,ax2) = plt.subplots(1,2)
+    fig.autofmt_xdate()
 
-# PM 2.5
-ax1.plot(dates,pm_25, 'tab:red')
-ax1.set_title('PM 2.5 Data')
-ax1.set(xlabel = 'Date', ylabel = 'ug/m^3')
-ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
+    # PM 2.5
+    ax1.plot(dates,pm_25, 'tab:red')
+    ax1.set_title('PM 2.5 Data')
+    ax1.set(xlabel = 'Date', ylabel = 'ug/m^3')
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
 
-# PM 10
-ax2.plot(dates,pm_10, 'tab:green')
-ax2.set_title('PM 10 Data')
-ax2.set(xlabel = 'Date', ylabel = 'ug/m^3')
-ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
+    # PM 10
+    ax2.plot(dates,pm_10, 'tab:green')
+    ax2.set_title('PM 10 Data')
+    ax2.set(xlabel = 'Date', ylabel = 'ug/m^3')
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
 
-# Stop Sensor
-sensor.stop()
-sensor.close_port()
+    # Stop Sensor
+    sensor.stop()
+    sensor.close_port()
 
-# Print Stats
-print("Data logging stopped")
-print("Average PM2.5 Concentration: " + str(np.average(pm_25)))
-print("Average PM10 Concentration: " + str(np.average(pm_10)))
+    # Print Stats
+    print("Data logging stopped")
+    print("Average PM2.5 Concentration: " + str(np.average(pm_25)))
+    print("Average PM10 Concentration: " + str(np.average(pm_10)))
 
-workbook.close()
-plt.show()
+    workbook.close()
+    plt.show()
+except KeyboardInterrupt:
+    # Stop Sensor
+    sensor.stop()
+    sensor.close_port()
+
+    # Print Stats
+    print("Data logging stopped")
+    print("Average PM2.5 Concentration: " + str(np.average(pm_25)))
+    print("Average PM10 Concentration: " + str(np.average(pm_10)))
+
+    workbook.close()
+    plt.show()

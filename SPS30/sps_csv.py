@@ -10,6 +10,12 @@ filename = 'PM_data.csv'
 fields = ['Timestamp', 'PM2.5', 'PM10.0']
 PM_Values = np.empty(shape=(0,2))
 
+'''
+Changes how long the code runs.
+For example, 60 runs for 60 secs, 3600 runs for an hour
+'''
+TIME_SECONDS = 10
+
 # Write fields to CSV
 with open(directory+filename, 'w') as csvfile:
     csvwriter = csv.writer(csvfile)
@@ -35,7 +41,7 @@ time.sleep(5)
 
 j = 0
 try:
-    while(j<3600):
+    while(j<TIME_SECONDS):
         # Read data. This is a tuple with 10 values.
         output = sensor.read_values()
         # Format date
@@ -50,8 +56,15 @@ try:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow([date_str,PM_Values[-1][-2],PM_Values[-1][-1]])
         # Wait 1 second
+        print("logging...")
         time.sleep(1)
         j+=1
+
+    # Stop Sensor
+    sensor.stop()
+    sensor.close_port()
+    print("Data Logging Stopped")
+    
 except KeyboardInterrupt:
     # Stop Sensor
     sensor.stop()
