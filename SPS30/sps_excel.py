@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 from datetime import datetime
+
 # Make workbook
-workbook = xlsxwriter.Workbook('/Users/matthewdiehl/Desktop/testsps30.xlsx')
+workbook = xlsxwriter.Workbook('/home/pi/Desktop/testsps30.xlsx')
 worksheet = workbook.add_worksheet()
 
 # Format columns
@@ -17,7 +18,7 @@ This must be set to the port that the sensor is using.
 Ex: On windows "COM3"
 Ex: On Linux "/dev/tty"....
 '''
-device_port = "/dev/tty.usbserial-FT4R5O6P"
+device_port = "/dev/ttyUSB0"
 
 sensor = sps30.SPS30(device_port)
 sensor.start()
@@ -27,14 +28,14 @@ pm_10 = np.array([])
 dates = []
 
 '''
-The device needs to idle for a
-second before collecting data
+The device needs to idle for a few
+seconds before collecting data
 '''
 print("Starting data log...")
 
 time.sleep(5)
 
-for i in range(2,102):
+for i in range(2,5):
     # Read data. This is a tuple with 10 values.
     output = sensor.read_values()
 
@@ -45,15 +46,7 @@ for i in range(2,102):
     worksheet.write('B'+str(i), output[3])
     pm_10 = np.append(pm_10,output[3])
     dates.append(datetime.fromtimestamp(time.time()))
-    '''
-    Date stuff not implemented but useful
-        
-    date = time.localtime()
-    act_date = str(date[0]) + "/" + str(date[1]) + "/" + str(date[2])
-    act_time = str(date[3]) + ":" + str(date[4]) + ":" + str(date[5])
-
-    output_data = act_date + "," + act_time + "," + sensorData[:-1] # remove comma from the end
-    '''
+    
     print("Writing to Excel...")
 
     time.sleep(1)
@@ -73,6 +66,7 @@ ax2.plot(dates,pm_10, 'tab:green')
 ax2.set_title('PM 10 Data')
 ax2.set(xlabel = 'Date', ylabel = 'ug/m^3')
 ax2.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
+
 # Stop Sensor
 sensor.stop()
 sensor.close_port()

@@ -70,6 +70,7 @@ class SPS30:
             data = struct.unpack(">ffffffffff", rawData)
         except struct.error:
             data = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        # [PM1.0, PM2.5, PM4.0, PM10, #PM0.5, #PM1.0, #PM2.5, #PM4.0, #PM10.0, Typ. Part. Size (um)]
         return data
     
     def read_serial_number(self):
