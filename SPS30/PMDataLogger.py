@@ -142,12 +142,14 @@ def logData():
             sensor.stop()
             sensor.close_port()
             ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            ss.mainloop() 
+            ss.mainloop()
+        # if no filetype specified, do csv
         else:
+            data = csvLog()
             sensor.stop()
             sensor.close_port()
-            fs = FailedScreen()
-        
+            ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
+            ss.mainloop()         
     except:
         sensor.stop()
         sensor.close_port()
