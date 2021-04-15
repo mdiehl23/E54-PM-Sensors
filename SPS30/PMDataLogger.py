@@ -13,11 +13,16 @@ This file reads PM data, outputs it to a file, and graphs
 the data using the Sensiron SPS30 PM sensor.
 @ Author: Matt Diehl
 '''
-sensor = sps30.SPS30(ConfigSPS30.PORT)
 
 # Directory that the file will get saved to
 directory = '/home/pi/Desktop/'
 
+# Make SPS object
+try:
+    sensor = sps30.SPS30(ConfigSPS30.PORT)
+except:
+    print("Sensor not plugged in")
+    
 def makeGraph(x,y1,y2):
     # Make Subplots
     fig, (ax1,ax2) = plt.subplots(1,2)
@@ -40,7 +45,9 @@ def makeGraph(x,y1,y2):
 def excelLog():
     PM_Values = np.empty(shape=(0,2))
     dates = []
-    filename = 'pm_data.xlsx'
+    now = datetime.now()
+    date_str = now.strftime("_%m-%d-%Y_%H%M_%Ss")
+    filename = 'pm_data' + date_str + '.xlsx'
 
     # Make workbook
     workbook = xlsxwriter.Workbook(directory + filename)
@@ -86,7 +93,9 @@ def excelLog():
 def csvLog():
     PM_Values = np.empty(shape=(0,2))
     dates = []
-    filename = 'pm_data.csv'
+    now = datetime.now()
+    date_str = now.strftime("_%m-%d-%Y_%H%M_%Ss")
+    filename = 'pm_data' + date_str + '.csv'
     fields = ['Timestamp', 'PM2.5', 'PM10.0']
     
     # Write fields to CSV
@@ -150,11 +159,12 @@ def logData():
             sensor.close_port()
             ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
             ss.mainloop()         
-    except:
-        sensor.stop()
-        sensor.close_port()
+    except Exception as e:
+        print(e)
         fs = FailedScreen()
         fs.mainloop()
+        sensor.stop()
+        sensor.close_port()
 
 if __name__ == '__main__':
     logData()

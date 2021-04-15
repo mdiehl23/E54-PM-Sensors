@@ -21,7 +21,7 @@ This is a boolean value that will determine whether a graphical
 output of the data will be automatically generated. When the value is
 set to true, a graph will be generated.
 '''
-GRAPH = False
+GRAPH = True
 
 '''
 PORT must be set to the port that the sensor is using.
