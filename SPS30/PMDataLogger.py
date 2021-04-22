@@ -8,7 +8,7 @@ import matplotlib.dates as mdates
 import numpy as np
 from datetime import datetime
 import ConfigSPS30
-from PMGUI import *
+
 '''
 This is where the SPS30 Datalogging should be ran from.
 This file reads PM data, outputs it to a file, and graphs
@@ -16,7 +16,7 @@ the data using the Sensiron SPS30 PM sensor.
 @ Author: Matt Diehl
 '''
 
-# Directory that the file will get saved to
+# Directory that the output files will get saved to
 directory = '/home/pi/Desktop/'
 
 # Make SPS object
@@ -28,7 +28,7 @@ except:
 def formatOutput(data):
     now = datetime.now()
     date_str = now.strftime("%m/%d/%Y %H:%M:%S")
-    status = open('/home/pi/Desktop/status.txt','a')
+    status = open(directory + 'status.txt','a')
     status.write(date_str + '\n')
     status.write('Data pull successful.\n')
     status.write('Average PM 2.5: ' + str(np.average(data[:,0])) + '\n')
@@ -156,34 +156,28 @@ def logData():
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
-            # Display GUI
-            #ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            #ss.mainloop()             
+           
         elif ConfigSPS30.FILETYPE == 'CSV':
             data = csvLog()
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
-            #ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            #ss.mainloop()
+
         # if no filetype specified, do csv
         else:
             data = csvLog()
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
-            #ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            #ss.mainloop()         
+       
     except Exception as e:
         print(e)
         now = datetime.now()
         date_str = now.strftime("%m/%d/%Y %H:%M:%S")
-        status = open('/home/pi/Desktop/status.txt','a')
+        status = open(directory + 'status.txt','a')
         status.write(date_str + '\n')
         status.write('Data log failed. Reconnect sensor.\n\n')
         status.close()
-        sensor.stop()
-        sensor.close_port()
 
 if __name__ == '__main__':
     logData()
