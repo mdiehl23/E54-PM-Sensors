@@ -3,11 +3,13 @@
 import sps30, time
 import xlsxwriter
 import csv
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import numpy as np
 from datetime import datetime
 import ConfigSPS30
+# only import graphing stuff if needed
+if ConfigSPS30.GRAPH:
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
 
 '''
 This is where the SPS30 Datalogging should be ran from.
@@ -20,12 +22,12 @@ the data using the Sensiron SPS30 PM sensor.
 try:
     sensor = sps30.SPS30(ConfigSPS30.PORT)
 except:
-    print("Sensor not plugged in")
+    print("Sensor not recognized")
 
 def formatOutput(data):
     now = datetime.now()
     date_str = now.strftime("%m/%d/%Y %H:%M:%S")
-    status = open(directory + 'status.txt','a')
+    status = open(ConfigSPS30.DIRECTORY + 'status.txt','a')
     status.write(date_str + '\n')
     status.write('Data pull successful.\n')
     status.write('Average PM 2.5: ' + str(np.average(data[:,0])) + '\n')
@@ -59,7 +61,7 @@ def excelLog():
     filename = 'pm_data' + date_str + '.xlsx'
 
     # Make workbook
-    workbook = xlsxwriter.Workbook(directory + filename)
+    workbook = xlsxwriter.Workbook(ConfigSPS30.DIRECTORY + filename)
     worksheet = workbook.add_worksheet()
     
     # Format columns
@@ -108,7 +110,7 @@ def csvLog():
     fields = ['Timestamp', 'PM2.5', 'PM10.0']
     
     # Write fields to CSV
-    with open(directory+filename, 'w') as csvfile:
+    with open(ConfigSPS30.DIRECTORY + filename, 'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(fields)
 
@@ -125,7 +127,7 @@ def csvLog():
         # Add this to the master 2D array with all the data
         PM_Values = np.insert(PM_Values,len(PM_Values),curr_data,axis=0)
         # Write values to CSV
-        with open(directory+filename, 'a') as csvfile:
+        with open(ConfigSPS30.DIRECTORY + filename, 'a') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow([date_str,PM_Values[-1][-2],PM_Values[-1][-1]])
         # Wait 1 second
@@ -171,7 +173,7 @@ def logData():
         print(e)
         now = datetime.now()
         date_str = now.strftime("%m/%d/%Y %H:%M:%S")
-        status = open(directory + 'status.txt','a')
+        status = open(ConfigSPS30.DIRECTORY + 'status.txt','a')
         status.write(date_str + '\n')
         status.write('Data log failed. Reconnect sensor.\n\n')
         status.close()
