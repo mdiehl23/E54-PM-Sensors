@@ -1,6 +1,12 @@
 from tkinter import *
 '''
-This screen will display once a successful data pull has been completed.
+These are user interfaces that were not used, but may be found useful.
+They were not used because the pijuice battery does not support tkinter.
+Instead, the status.txt output was used.
+'''
+
+'''
+This screen displays the average PM2.5 and PM10 from a successful data pull.
 @Author: Matt Diehl
 '''
 class SuccessScreen(Tk):
