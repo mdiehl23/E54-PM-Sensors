@@ -19,7 +19,9 @@ FILETYPE = 'CSV'
 '''
 This is a boolean value that will determine whether a graphical
 output of the data will be automatically generated. When the value is
-set to true, a graph will be generated.
+set to true, a graph will be generated. This should generally be set to false,
+as the pijuice cannot display a graph. However, it will not crash the code if it
+is set to true.
 '''
 GRAPH = False
 
