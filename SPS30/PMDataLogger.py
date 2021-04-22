@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sps30, time
 import xlsxwriter
 import csv
@@ -22,6 +24,16 @@ try:
     sensor = sps30.SPS30(ConfigSPS30.PORT)
 except:
     print("Sensor not plugged in")
+
+def formatOutput(data):
+    now = datetime.now()
+    date_str = now.strftime("%m/%d/%Y %H:%M:%S")
+    status = open('/home/pi/Desktop/status.txt','a')
+    status.write(date_str + '\n')
+    status.write('Data pull successful.\n')
+    status.write('Average PM 2.5: ' + str(np.average(data[:,0])) + '\n')
+    status.write('Average PM 10.0: ' + str(np.average(data[:,1])) + '\n\n')
+    status.close()
     
 def makeGraph(x,y1,y2):
     # Make Subplots
@@ -143,26 +155,33 @@ def logData():
             # Stop Sensor
             sensor.stop()
             sensor.close_port()
+            formatOutput(data)
             # Display GUI
-            ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            ss.mainloop()             
+            #ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
+            #ss.mainloop()             
         elif ConfigSPS30.FILETYPE == 'CSV':
             data = csvLog()
             sensor.stop()
             sensor.close_port()
-            ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            ss.mainloop()
+            formatOutput(data)
+            #ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
+            #ss.mainloop()
         # if no filetype specified, do csv
         else:
             data = csvLog()
             sensor.stop()
             sensor.close_port()
-            ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
-            ss.mainloop()         
+            formatOutput(data)
+            #ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
+            #ss.mainloop()         
     except Exception as e:
         print(e)
-        fs = FailedScreen()
-        fs.mainloop()
+        now = datetime.now()
+        date_str = now.strftime("%m/%d/%Y %H:%M:%S")
+        status = open('/home/pi/Desktop/status.txt','a')
+        status.write(date_str + '\n')
+        status.write('Data log failed. Reconnect sensor.\n\n')
+        status.close()
         sensor.stop()
         sensor.close_port()
 
