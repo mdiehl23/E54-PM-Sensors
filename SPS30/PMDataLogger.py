@@ -16,9 +16,6 @@ the data using the Sensiron SPS30 PM sensor.
 @ Author: Matt Diehl
 '''
 
-# Directory that the output files will get saved to
-directory = '/home/pi/Desktop/'
-
 # Make SPS object
 try:
     sensor = sps30.SPS30(ConfigSPS30.PORT)
