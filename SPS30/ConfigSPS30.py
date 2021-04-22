@@ -29,3 +29,9 @@ Ex: On windows "COM3"
 Ex: On Linux "/dev/tty"....
 '''
 PORT = "/dev/ttyUSB0"
+
+'''
+This is the directory that the output files will get saved to.
+This will be an excel/csv and a txt output called "status.txt"
+'''
+DIRECTORY = '/home/pi/Desktop/'
