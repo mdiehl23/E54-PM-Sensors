@@ -6,6 +6,7 @@ import csv
 import numpy as np
 from datetime import datetime
 import ConfigSPS30
+from PMGUI import *
 # only import graphing stuff if needed
 if ConfigSPS30.GRAPH:
     import matplotlib.pyplot as plt
@@ -155,12 +156,18 @@ def logData():
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
-           
+            # Example gui code if ever implemented
+            # ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
+            # ss.mainloop()
+            
         elif ConfigSPS30.FILETYPE == 'CSV':
             data = csvLog()
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
+            # Example gui code if ever implemented
+            # ss = SuccessScreen(str(np.average(data[:,0])),str(np.average(data[:,1])))
+            # ss.mainloop()
 
         # if no filetype specified, do csv
         else:
@@ -168,6 +175,9 @@ def logData():
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
+            # Example gui code for failed screen
+            # fs = FailedScreen()
+            # fs.mainloop()
        
     except Exception as e:
         print(e)
