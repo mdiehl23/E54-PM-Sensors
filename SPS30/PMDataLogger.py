@@ -175,9 +175,7 @@ def logData():
             sensor.stop()
             sensor.close_port()
             formatOutput(data)
-            # Example gui code for failed screen
-            # fs = FailedScreen()
-            # fs.mainloop()
+            
        
     except Exception as e:
         print(e)
@@ -187,6 +185,9 @@ def logData():
         status.write(date_str + '\n')
         status.write('Data log failed. Reconnect sensor.\n\n')
         status.close()
+        # Example gui code for failed screen
+        # fs = FailedScreen()
+        # fs.mainloop()
 
 if __name__ == '__main__':
     logData()
