@@ -29,6 +29,8 @@ GRAPH = False
 PORT must be set to the port that the sensor is using.
 Ex: On windows "COM3"
 Ex: On Linux "/dev/tty"....
+To check your serial ports on Windows, search device manager and then go to "ports".
+To check your serial ports on Linux/MacOS, type "ls /dev/tty*" into your terminal.
 '''
 PORT = "/dev/ttyUSB0"
 
